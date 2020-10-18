@@ -3,7 +3,7 @@ from main import *
 graficar_parametros(0, 240)
 # I
 print('Ej 3 parte I\n')
-parametros_diarios(150, 240, verbose=True)
+parametros_diarios(150, 240, verbose=True, contagios_diarios=True)
 plt.show()
 
 # II

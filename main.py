@@ -185,7 +185,7 @@ def fallecidos_otras_causas(t):
 
 
 # Calculamos los parámetros diarios y los graficamos
-def parametros_diarios(a, b, verbose=False):
+def parametros_diarios(a, b, verbose=False, contagios_diarios=False):
     contagios_list = []
     fallecidos_covid_list = []
     fallecidos_otras_causas_list = []
@@ -199,14 +199,14 @@ def parametros_diarios(a, b, verbose=False):
         fallecidos_covid_list.append(fallecidos_covid(t))
         fallecidos_otras_causas_list.append(fallecidos_otras_causas(t))
 
-        if verbose:
+        if contagios_diarios:
             if umbral_contagios < 0 and contagios_list[-1] >= 5000:
-                umbral_contagios = t
-                print('A partir del día {} se superan los 5000 contagios diarios el día {}'.format(a, umbral_contagios))
+                umbral_contagios = t - sub_linspace[0]
+                print('A partir del día {} se superan los 5000 contagios diarios el día {}'.format(a, t))
 
             if umbral_fallecimientos < 0 and fallecidos_covid_list[-1] >= 50:
-                umbral_fallecimientos = t
-                print('A partir del día {} se superan los 50 fallecimientos diarios el día {}'.format(a, umbral_fallecimientos))
+                umbral_fallecimientos = t - sub_linspace[0]
+                print('A partir del día {} se superan los 50 fallecimientos diarios el día {}'.format(a, t))
 
     # Los pasamos a numpy
     contagios_list = np.array(contagios_list)
@@ -214,16 +214,41 @@ def parametros_diarios(a, b, verbose=False):
     fallecidos_otras_causas_list = np.array(fallecidos_otras_causas_list)
 
     if verbose:
-        plt.figure(5)
+        if contagios_diarios:
+            plt.figure(5)
 
-        plt.subplot(1, 2, 1, title='Contagios diarios')
-        plt.plot(sub_linspace, contagios_list, color='r')
+            plt.subplot(1, 3, 1, title='Contagios diarios')
+            plt.plot(sub_linspace, contagios_list, color='r')
+            plt.vlines(umbral_contagios + sub_linspace[0], contagios_list[0], contagios_list[umbral_contagios], linestyles='dashed')
+            plt.hlines(contagios_list[umbral_contagios], sub_linspace[0], umbral_contagios + sub_linspace[0], linestyles='dashed')
+            plt.scatter(umbral_contagios + sub_linspace[0], contagios_list[umbral_contagios], color='r')
+            plt.annotate('({}, {})'.format(umbral_contagios + sub_linspace[0], round(contagios_list[umbral_contagios])),
+                         xy=(umbral_contagios + sub_linspace[0] + 3, contagios_list[umbral_contagios] + 3))
 
-        plt.subplot(1, 2, 2, title='Fallecimientos diarios')
-        plt.plot(sub_linspace, fallecidos_covid_list, color='m')
-        plt.plot(sub_linspace, fallecidos_otras_causas_list, color='b')
-        plt.plot(sub_linspace, fallecidos_covid_list + fallecidos_otras_causas_list, color='k')
-        plt.legend(['Debido al covid', 'Debido a otras causas', 'Totales'], loc='upper right')
+            plt.subplot(1, 3, 2, title='Fallecimientos diarios')
+
+            plt.plot(sub_linspace, fallecidos_otras_causas_list, color='b')
+            plt.plot(sub_linspace, fallecidos_covid_list + fallecidos_otras_causas_list, color='k')
+            plt.legend(['Debido a otras causas', 'Totales'], loc='upper right')
+
+            plt.subplot(1, 3, 3, title='Fallecimientos diarios por covid')
+            plt.plot(sub_linspace, fallecidos_covid_list, color='m')
+            plt.vlines(umbral_fallecimientos + sub_linspace[0], fallecidos_covid_list[0], fallecidos_covid_list[umbral_fallecimientos], linestyles='dashed')
+            plt.hlines(fallecidos_covid_list[umbral_fallecimientos], sub_linspace[0], umbral_fallecimientos + sub_linspace[0], linestyles='dashed')
+            plt.scatter(umbral_fallecimientos + sub_linspace[0], fallecidos_covid_list[umbral_fallecimientos], color='r')
+            plt.annotate('({}, {})'.format(umbral_fallecimientos + sub_linspace[0], round(fallecidos_covid_list[umbral_fallecimientos])),
+                         xy=(umbral_fallecimientos + sub_linspace[0] + 3, fallecidos_covid_list[umbral_fallecimientos] + 3))
+        else:
+            plt.figure(5)
+
+            plt.subplot(1, 2, 1, title='Contagios diarios')
+            plt.plot(sub_linspace, contagios_list, color='r')
+
+            plt.subplot(1, 2, 2, title='Fallecimientos diarios')
+            plt.plot(sub_linspace, fallecidos_covid_list, color='m')
+            plt.plot(sub_linspace, fallecidos_otras_causas_list, color='b')
+            plt.plot(sub_linspace, fallecidos_covid_list + fallecidos_otras_causas_list, color='k')
+            plt.legend(['Debido al covid', 'Debido a otras causas', 'Totales'], loc='upper right')
 
         print('Contagios en [{}, {}]: '.format(a, b), np.sum(contagios_list))
         print('Fallecidos por covid en [{}, {}]: '.format(a, b), np.sum(fallecidos_covid_list))
@@ -244,19 +269,31 @@ def incidencia_acumulada(a, b):
 
     contagios_cum = []
     sub_linspace = linspace[a:b + 1]
-    umbral = 'primero'
+    umbral_50 = -1
+    umbral_100 = -1
     for t in sub_linspace:
-        contagios_cum.append(np.sum(contagios_list[t - 13:t + 1])/N[t, 0]*100000)
+        contagios_cum.append(np.sum(contagios_list[t - 13:t + 1])/N[t]*100000)
 
-        if umbral == 'primero' and contagios_cum[-1] >= 50:
+        if umbral_50 < 0 and contagios_cum[-1] >= 50:
+            umbral_50 = t - sub_linspace[0]
             print('Se supera la incidencia acumulada de 50 el día {}'.format(t))
-            umbral = 'segundo'
 
-        elif umbral == 'segundo' and contagios_cum[-1] >= 100:
+        elif umbral_100 < 0 and contagios_cum[-1] >= 100:
             print('Se supera la incidencia acumulada de 100 el día {}'.format(t))
-            umbral = 'acabado'
+            umbral_100 = t - sub_linspace[0]
 
     plt.figure(6)
 
     plt.plot(sub_linspace, contagios_cum, color='r')
+
+    plt.vlines(umbral_50 + sub_linspace[0], contagios_cum[0], contagios_cum[umbral_50], linestyles='dashed')
+    plt.hlines(contagios_cum[umbral_50], sub_linspace[0], umbral_50 + sub_linspace[0], linestyles='dashed')
+    plt.scatter(umbral_50 + sub_linspace[0], contagios_cum[umbral_50], color='r')
+    plt.annotate('({}, {})'.format(umbral_50 + sub_linspace[0], round(contagios_cum[umbral_50])), xy=(umbral_50 + sub_linspace[0] + 3, contagios_cum[umbral_50] + 3))
+
+    plt.vlines(umbral_100 + sub_linspace[0], contagios_cum[0], contagios_cum[umbral_100], linestyles='dashed')
+    plt.hlines(contagios_cum[umbral_100], sub_linspace[0], umbral_100 + sub_linspace[0], linestyles='dashed')
+    plt.scatter(umbral_100 + sub_linspace[0], contagios_cum[umbral_100], color='r')
+    plt.annotate('({}, {})'.format(umbral_100 + sub_linspace[0], round(contagios_cum[umbral_100])), xy=(umbral_100 + sub_linspace[0] + 3, contagios_cum[umbral_100] + 3))
+
     plt.title('Incidencia acumulada de contagios')
