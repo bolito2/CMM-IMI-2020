@@ -90,34 +90,41 @@ def mu(t):
 # Sacamos el valor de gamma, media de los últimos 20 días
 gamma = np.sum(gamma_obs[-20:])/20
 
+
 # Graficamos los parámetros
-beta_list = []
-mu_star_list = []
-mu_list = []
-for t in linspace:
-    beta_list.append(beta(t))
-    mu_star_list.append(mu_star(t))
-    mu_list.append(mu(t))
+def graficar_parametros(a, b):
+    sub_linspace = linspace[a:b+1]
 
-beta_list = np.array(beta_list)
-mu_star_list = np.array(mu_star_list)
+    beta_list = []
+    mu_star_list = []
+    mu_list = []
+    for t in sub_linspace:
+        beta_list.append(beta(t))
+        mu_star_list.append(mu_star(t))
+        mu_list.append(mu(t))
 
-plt.figure(1)
+    beta_list = np.array(beta_list)
+    mu_star_list = np.array(mu_star_list)
 
-plt.subplot(2, 2, 1, title='β')
-plt.plot(beta_obs, color='b')
-plt.plot(linspace, beta_list, color='r')
+    plt.figure(1)
 
-plt.subplot(2, 2, 2, title='μ*')
-plt.plot(mu_star_obs, color='b')
-plt.plot(linspace, mu_star_list, color='r')
+    plt.subplot(1, 2, 1, title='β')
+    plt.plot(beta_obs, color='b')
+    plt.plot(sub_linspace, beta_list, color='r')
 
-plt.subplot(2, 2, 3, title='μ')
-plt.plot(linspace, mu_list, color='k')
+    plt.subplot(1, 2, 2, title='μ*')
+    plt.plot(mu_star_obs, color='b')
+    plt.plot(sub_linspace, mu_star_list, color='r')
 
-plt.subplot(2, 2, 4, title='γ')
-plt.plot(gamma_obs, color='b')
-plt.plot(gamma*np.ones(data_length), color='r')
+    plt.figure(2)
+    plt.plot(sub_linspace, mu_list, color='k')
+    plt.title('μ')
+
+    plt.figure(3)
+
+    plt.plot(gamma_obs, color='b')
+    plt.plot(gamma*np.ones(data_length), color='r')
+    plt.title('γ')
 
 # La tasa de nacimiento es un parámetro fijo
 lambd = 1.9e-5
@@ -144,7 +151,7 @@ def plot_SIR_curves(a, b):
     sub_linspace = linspace[a:b+1]
 
     # Graficamos las curvas N, S, I, R de nuestra simulación
-    plt.figure(3)
+    plt.figure(4)
     plt.title('Predicciones evolución epidemia')
 
     mpl.rcParams['axes.prop_cycle'] = mpl.cycler(color=['k', 'b'])
@@ -203,7 +210,7 @@ def parametros_diarios(a, b, verbose=False):
     fallecidos_total_list = np.array(fallecidos_total_list)
 
     if verbose:
-        plt.figure(4)
+        plt.figure(5)
 
         plt.subplot(1, 2, 1, title='Contagios diarios')
         plt.plot(sub_linspace, contagios_list, color='r')
@@ -245,7 +252,7 @@ def incidencia_acumulada(a, b):
             print('Se supera la incidencia acumulada de 100 el día {}'.format(t))
             umbral = 'acabado'
 
-    plt.figure(5)
+    plt.figure(6)
 
     plt.plot(sub_linspace, contagios_cum, color='r')
     plt.title('Incidencia acumulada de contagios')
