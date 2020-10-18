@@ -8,21 +8,6 @@ import matplotlib as mpl
 class ModeloAsintomaticos():
     def __init__(self, N_0, S_0, I_0, A_0, R_0, lambd, mu, mu_star, gamma,
                  gamma_star, beta_1, beta_2, beta_3, beta_4):
-        self.N_0 = N_0
-        self.gamma = gamma
-        self.beta_4 = beta_4
-        self.mu_star = mu_star
-        self.mu = mu
-        self.lambd = lambd
-        self.A_0 = A_0
-        self.I_0 = I_0
-        self.beta_2 = beta_2
-        self.gamma_star = gamma_star
-        self.beta_1 = beta_1
-        self.beta_3 = beta_3
-        self.S_0 = S_0
-        self.R_0 = R_0
-
         assert(N_0 == S_0 + I_0 + A_0 + R_0)
 
         linspace = range(61)
