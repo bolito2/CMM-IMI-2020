@@ -64,7 +64,7 @@ c, d = reg_log(x, np.array(mu_star_obs) - mu_star_0)
 linspace = range(241)
 
 
-# estas son las curvitas
+# estas son las curvas
 def beta(t):
     if t <= 150:
         return beta_0 + np.exp(a*t + b)
