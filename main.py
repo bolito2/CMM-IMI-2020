@@ -218,7 +218,7 @@ def parametros_diarios(a, b, verbose=False):
         plt.subplot(1, 2, 2, title='Fallecimientos diarios')
         plt.plot(sub_linspace, fallecidos_covid_list, color='m')
         plt.plot(sub_linspace, fallecidos_total_list, color='k')
-        plt.legend(['Fallecidos por covid', 'Fallecidos totales'], loc='upper right')
+        plt.legend(['Debido al covid', 'Debido a otras causas'], loc='upper right')
 
         step = linspace[1] - linspace[0]
 

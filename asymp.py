@@ -38,14 +38,19 @@ class ModeloAsintomaticos():
         A = A[:, 0]
         R = R[:, 0]
 
+
         plt.figure(1)
         plt.title('Predicciones evolución epidemia')
 
         plt.subplot(2, 2, 1, title='Totales')
         plt.plot(linspace, sol[:, 0], color='k')
+        ax = plt.gca()
+        ax.ticklabel_format(useOffset=False)
 
         plt.subplot(2, 2, 2, title='Susceptibles')
         plt.plot(linspace, sol[:, 0], color='b')
+        ax = plt.gca()
+        ax.ticklabel_format(useOffset=False)
 
         mpl.rcParams['axes.prop_cycle'] = mpl.cycler(color=['r', 'y'])
         plt.subplot(2, 2, 3, title='Infectados y asintomáticos')
