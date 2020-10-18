@@ -61,8 +61,8 @@ class ModeloAsintomaticos():
         plt.plot(linspace, sol[:, 4], color='g')
 
         fallecidos = mu_star*I
-        contagiados_por_infectado = (beta_1 + beta_2)*np.multiply(S, I)
-        contagiados_por_asintomatico = (beta_3 + beta_4) * np.multiply(S, I)
+        contagiados_por_infectado = beta_1*np.multiply(S, I)
+        contagiados_por_asintomatico = beta_3*np.multiply(S, A)
 
         plt.figure(2)
         plt.title('Curvas diarias')
