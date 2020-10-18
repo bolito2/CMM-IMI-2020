@@ -57,8 +57,8 @@ def reg_log(x, y):
 
 # calculamos los parametros de la regresion exponencial
 x = np.array(range(data_length))
-a, b = reg_log(x, np.array(beta_obs))
-c, d = reg_log(x, np.array(mu_star_obs))
+a, b = reg_log(x, np.array(beta_obs) - beta_0)
+c, d = reg_log(x, np.array(mu_star_obs) - mu_star_0)
 
 # intervalo de tiempo en el que hacemos predicciones
 linspace = range(241)
