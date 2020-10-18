@@ -29,10 +29,12 @@ data_length = len(nuevos_casos)
 
 beta_obs = []
 mu_star_obs = []
+gamma_obs = []
 
 for i in range(data_length):
     beta_obs.append(nuevos_casos[i]/(I*N_0))
     mu_star_obs.append(nuevos_fallecimientos[i]/I)
+    gamma_obs.append(nuevas_recuperaciones[i]/I)
 
     # datos acumulados
     S += - nuevos_casos[i]
@@ -59,7 +61,7 @@ a, b = reg_log(x, np.array(beta_obs))
 c, d = reg_log(x, np.array(mu_star_obs))
 
 # intervalo de tiempo en el que hacemos predicciones
-linspace = range(0, 241)
+linspace = range(241)
 
 
 # estas son las curvitas
@@ -85,7 +87,10 @@ def mu(t):
     return 3.08e-5 + 5.4e-6*np.cos(1.67e-2*t + 0.735)
 
 
-# Graficamos los valores reales y la curva aproximada
+# Sacamos el valor de gamma, media de los últimos 20 días
+gamma = np.sum(gamma_obs[-20:])/20
+
+# Graficamos los parámetros
 beta_list = []
 mu_star_list = []
 mu_list = []
@@ -99,22 +104,22 @@ mu_star_list = np.array(mu_star_list)
 
 plt.figure(1)
 
-plt.subplot(1, 2, 1, title='beta')
+plt.subplot(2, 2, 1, title='β')
 plt.plot(beta_obs, color='b')
 plt.plot(linspace, beta_list, color='r')
 
-plt.subplot(1, 2, 2, title='μ*')
+plt.subplot(2, 2, 2, title='μ*')
 plt.plot(mu_star_obs, color='b')
 plt.plot(linspace, mu_star_list, color='r')
 
-# Graficamos la curva de muertes por otras causas
-plt.figure(2)
+plt.subplot(2, 2, 3, title='μ')
 plt.plot(linspace, mu_list, color='k')
-plt.title('Muertes esperadas por otras causas')
 
+plt.subplot(2, 2, 4, title='γ')
+plt.plot(gamma_obs, color='b')
+plt.plot(gamma*np.ones(data_length), color='r')
 
-# parametros fijos
-gamma = 1e-2
+# La tasa de nacimiento es un parámetro fijo
 lambd = 1.9e-5
 
 
