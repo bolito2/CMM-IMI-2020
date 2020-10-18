@@ -146,6 +146,10 @@ def f(y, t, beta, lambd, mu, mu_star, gamma):
 sol = odeint(f, y_0, linspace, args=(beta, lambd, mu, mu_star, gamma))
 N, S, I, R = np.split(sol, range(1, 4), axis=1)
 
+N = N[:, 0]
+S = S[:, 0]
+I = I[:, 0]
+R = R[:, 0]
 
 def plot_SIR_curves(a, b):
     sub_linspace = linspace[a:b+1]
@@ -167,24 +171,24 @@ def plot_SIR_curves(a, b):
 
 # Función para sacar los infectados en el momento t a partir de las curvas
 def contagios(t):
-    return beta(t)*S[t, 0]*I[t, 0]
+    return beta(t)*S[t]*I[t]
 
 
 # Función para sacar los fallecidos por covid en el momento t a partir de las curvas
 def fallecidos_covid(t):
-    return mu_star(t)*I[t, 0]
+    return mu_star(t)*I[t]
 
 
 # Función para sacar los fallecidos totales en el momento t a partir de las curvas
-def fallecidos_totales(t):
-    return mu_star(t)*I[t, 0] + N[t, 0]*mu(t)
+def fallecidos_otras_causas(t):
+    return N[t]*mu(t)
 
 
 # Calculamos los parámetros diarios y los graficamos
 def parametros_diarios(a, b, verbose=False):
     contagios_list = []
     fallecidos_covid_list = []
-    fallecidos_total_list = []
+    fallecidos_otras_causas_list = []
 
     umbral_contagios = -1
     umbral_fallecimientos = -1
@@ -193,7 +197,7 @@ def parametros_diarios(a, b, verbose=False):
     for t in sub_linspace:
         contagios_list.append(contagios(t))
         fallecidos_covid_list.append(fallecidos_covid(t))
-        fallecidos_total_list.append(fallecidos_totales(t))
+        fallecidos_otras_causas_list.append(fallecidos_otras_causas(t))
 
         if verbose:
             if umbral_contagios < 0 and contagios_list[-1] >= 5000:
@@ -207,7 +211,7 @@ def parametros_diarios(a, b, verbose=False):
     # Los pasamos a numpy
     contagios_list = np.array(contagios_list)
     fallecidos_covid_list = np.array(fallecidos_covid_list)
-    fallecidos_total_list = np.array(fallecidos_total_list)
+    fallecidos_otras_causas_list = np.array(fallecidos_otras_causas_list)
 
     if verbose:
         plt.figure(5)
@@ -217,20 +221,20 @@ def parametros_diarios(a, b, verbose=False):
 
         plt.subplot(1, 2, 2, title='Fallecimientos diarios')
         plt.plot(sub_linspace, fallecidos_covid_list, color='m')
-        plt.plot(sub_linspace, fallecidos_total_list, color='k')
-        plt.legend(['Debido al covid', 'Debido a otras causas'], loc='upper right')
+        plt.plot(sub_linspace, fallecidos_otras_causas_list, color='b')
+        plt.plot(sub_linspace, fallecidos_covid_list + fallecidos_otras_causas_list, color='k')
+        plt.legend(['Debido al covid', 'Debido a otras causas', 'Totales'], loc='upper right')
 
-        step = linspace[1] - linspace[0]
-
-        print('Contagios en [{}, {}]: '.format(a, b), np.sum(contagios_list)*step)
-        print('Fallecidos por covid en [{}, {}]: '.format(a, b), np.sum(fallecidos_covid_list)*step)
-        print('Fallecidos totales en [{}, {}]: '.format(a, b), np.sum(fallecidos_total_list)*step)
+        print('Contagios en [{}, {}]: '.format(a, b), np.sum(contagios_list))
+        print('Fallecidos por covid en [{}, {}]: '.format(a, b), np.sum(fallecidos_covid_list))
+        print('Fallecidos por otras causas en [{}, {}]: '.format(a, b), np.sum(fallecidos_otras_causas_list))
+        print('Fallecidos totales en [{}, {}]: '.format(a, b), np.sum(fallecidos_covid_list + fallecidos_otras_causas_list))
         print('tasa de morición en [{}, {}]: '.format(a, b),
               np.sum(fallecidos_covid_list) / np.sum(contagios_list))
         print('Variación total de población en [{}, {}]: '.format(a, b),
-              N[b, 0] - N[a, 0])
+              N[b] - N[a])
 
-    return contagios_list, fallecidos_covid_list, fallecidos_total_list
+    return contagios_list, fallecidos_covid_list, fallecidos_otras_causas_list
 
 
 # Función para sacar la incidencia acumulada de cualquier curva los últimos 14 días
