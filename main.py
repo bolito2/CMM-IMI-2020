@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.integrate import odeint, quad
+from scipy.integrate import odeint
 
 from matplotlib import pyplot as plt
 import matplotlib as mpl
