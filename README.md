@@ -4,6 +4,8 @@ Código usado para el [Concurso de Modelización Matemática (CMM-IMI). Edición
 
 [Nuestra participación](https://drive.google.com/file/d/14REuMg0-EDMIOYZ1lwpVq9YgJST6Yrfq/view?usp=sharing) ha sido creada por Óscar Álvarez Sánchez(grado en Matematicas UCM), Daniel Andrés Solís(grado en Ingeniería Matemática UCM) y Pablo Gómez Morales(grado en Matemáticas UCM) a partir de los resultados de este programa.
 
+Se trata de un modelo epidemiológico para predecir los contagios y fallecimientos por COVID 🙄
+
 ## Cómo usar
 ### Instalar dependencias
 ```bash
