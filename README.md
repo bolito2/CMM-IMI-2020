@@ -5,12 +5,16 @@ Código usado para el [Concurso de Modelización Matemática (CMM-IMI). Edición
 [Nuestra participación](https://drive.google.com/file/d/14REuMg0-EDMIOYZ1lwpVq9YgJST6Yrfq/view?usp=sharing) ha sido creada por Óscar Álvarez Sánchez(grado en Matematicas UCM), Daniel Andrés Solís(grado en Ingeniería Matemática UCM) y Pablo Gómez Morales(grado en Matemáticas UCM) a partir de los resultados de este programa.
 
 ## Cómo usar
+### Instalar dependencias
+```bash
+pip install matplotlib openpyxl scipy numpy
+```
 ### Predicciones enunciado
 Para ver los resultados de cada pregunta ejecutar en el terminal
 ```bash
 python ej*.py
 ```
-para el ejercicio deseado(es necesario tener instalado Python 3)
+para el ejercicio deseado
 
 ### Predicciones a medida
 Para obtener predicciones en otro periodo de tiempo se puede usar el modelo básico creando un script de la siguente forma 
